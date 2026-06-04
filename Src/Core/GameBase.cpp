@@ -1,11 +1,15 @@
-#include "core/GameBase.h"
+#include "GameBase.h"
+#include <memory>
 #include <SDL2/SDL.h>
-#include "utils/SDLUtils.h"
-#include "core/GameData.h"
+#include "Utils/SDLUtils.h"
+#include "Core/GameData.h"
+#include "Graphics/Renderer/Renderer.h"
+#include "Math/Random.h"
 
 GameBase::GameBase()
 :mWindow(nullptr)
 ,mGameData(nullptr)
+,mRenderer(nullptr)
 ,mGameState(GameState::DOWN)
 ,mIsRunning(false)
 ,mTicksCount(0)
@@ -85,6 +89,8 @@ void SDLWindowDeleter::operator()(SDL_Window* window) const{
 }
 
 bool GameBase::SetupBase() {
+    Random::Init();
+
     // Init Game data
     mGameData = std::make_unique<GameData>();
 
@@ -103,6 +109,14 @@ bool GameBase::SetupBase() {
         return false;
     }
     mWindow.reset(window);
+
+    // Create renderer
+    mRenderer = std::make_unique<Renderer>(mWindow.get(), mGameData->GetMainConfig().WINDOW_WIDTH,
+                                           mGameData->GetMainConfig().WINDOW_HEIGHT);
+    if (!mRenderer->Init()) {
+        SDL_Log("Failed to initialize renderer");
+        return false;
+    }
 
     return true;
 }
@@ -128,7 +142,7 @@ void GameBase::UpdateGameBase(const float deltaTime) {
     // TODO
 }
 
-void GameBase::GenerateOutput() {
-    // TODO
+void GameBase::GenerateOutput() const {
+    mRenderer->Draw();
 }
 

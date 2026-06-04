@@ -1,5 +1,6 @@
 #pragma once
-#include "TypesFwd.h"
+#include "Types/SDLTypesFwd.h"
+#include "Types/TypesFwd.h"
 
 class GameBase {
 public:
@@ -10,6 +11,9 @@ public:
     void RunLoop();
     void Quit() { mIsRunning = false;}
     void Shutdown();
+
+    // Getters
+    [[nodiscard]] Renderer* GetRenderer() const { return mRenderer.get(); }
 
 protected:
     // Lifecycle methods
@@ -30,13 +34,16 @@ private:
     // Looping operations
     void ProcessInput();
     void UpdateGameBase(float deltaTime);
-    void GenerateOutput();
+    void GenerateOutput() const;
 
     // System window
     UniqueSDLWindow mWindow;
 
     // Game configuration
     std::unique_ptr<GameData> mGameData;
+
+    // Renderer
+    std::unique_ptr<Renderer> mRenderer;
 
     // Game control variables
     GameState mGameState;

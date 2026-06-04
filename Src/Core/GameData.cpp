@@ -1,4 +1,4 @@
-#include "core/GameData.h"
+#include "Core/GameData.h"
 
 GameData::GameData()
 :mMainConfig({}) {

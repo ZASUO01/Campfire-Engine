@@ -51,19 +51,23 @@ FetchContent_MakeAvailable(SDL2 SDL_image SDL_ttf SDL_mixer)
 
 # Configure file sources
 file(GLOB_RECURSE ENGINE_HEADERS CONFIGURE_DEPENDS
-        "include/*.h"
-        "include/core/*.h"
-        "include/utils/*.h"
+        "Include/Core/*.h"
+        "Include/Graphics/*.h"
+        "Include/Graphics/Renderer/*.h"
+        "Include/Math/*.h"
+        "Include/Types/*.h"
+        "Include/Utils/*.h"
 )
 file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS
-        "src/core/*.cpp"
-        "src/utils/*.cpp"
+        "Src/Core/*.cpp"
+        "Src/Graphics/*.cpp"
+        "Src/Graphics/Renderer/*.cppp"
+        "Src/Math/*.cpp"
+        "Src/Utils/*.cpp"
 )
 
 # The GLAD library will be compiled together the source codes
-set(GLAD_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/external/glad/glad.c"
-        include/core/GameData.h
-        src/core/GameData.cpp)
+set(GLAD_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/External/glad/glad.c")
 
 # Configure this as a library
 add_library(${PROJECT_NAME} STATIC ${ENGINE_SOURCES} ${ENGINE_HEADERS} ${GLAD_SOURCE})
@@ -71,12 +75,12 @@ add_library(${PROJECT_NAME} STATIC ${ENGINE_SOURCES} ${ENGINE_HEADERS} ${GLAD_SO
 # Configure headers location internally and externally
 target_include_directories(${PROJECT_NAME}
         PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/external
-        ${CMAKE_CURRENT_SOURCE_DIR}/external/glad
+        ${CMAKE_CURRENT_SOURCE_DIR}/Include
+        ${CMAKE_CURRENT_SOURCE_DIR}/External
+        ${CMAKE_CURRENT_SOURCE_DIR}/External/glad
 
         PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
 )
 
 # The engine uses this libraries internally

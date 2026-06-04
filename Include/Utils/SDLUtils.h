@@ -12,4 +12,12 @@ namespace SDLUtils {
             }
         }
     };
+
+    struct SDL_GLContextDeleter {
+        void operator()(void* context) const {
+            if (context) {
+                SDL_GL_DeleteContext(context);
+            }
+        }
+    };
 }
