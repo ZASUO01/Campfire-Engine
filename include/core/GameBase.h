@@ -35,6 +35,9 @@ private:
     // System window
     UniqueSDLWindow mWindow;
 
+    // Game configuration
+    std::unique_ptr<GameData> mGameData;
+
     // Game control variables
     GameState mGameState;
     bool mIsRunning;

@@ -1,9 +1,11 @@
 #include "core/GameBase.h"
-#include "utils/SDLUtils.h"
 #include <SDL2/SDL.h>
+#include "utils/SDLUtils.h"
+#include "core/GameData.h"
 
 GameBase::GameBase()
 :mWindow(nullptr)
+,mGameData(nullptr)
 ,mGameState(GameState::DOWN)
 ,mIsRunning(false)
 ,mTicksCount(0)
@@ -83,13 +85,16 @@ void SDLWindowDeleter::operator()(SDL_Window* window) const{
 }
 
 bool GameBase::SetupBase() {
+    // Init Game data
+    mGameData = std::make_unique<GameData>();
+
     //System window
     SDL_Window* window = SDL_CreateWindow(
-        "Campfire Engine",
+        mGameData->GetMainConfig().WINDOW_TITLE.c_str(),
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        1024,
-        768,
+        mGameData->GetMainConfig().WINDOW_WIDTH,
+        mGameData->GetMainConfig().WINDOW_HEIGHT,
         SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
     );
 

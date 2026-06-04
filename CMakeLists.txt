@@ -61,7 +61,9 @@ file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS
 )
 
 # The GLAD library will be compiled together the source codes
-set(GLAD_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/external/glad/glad.c")
+set(GLAD_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/external/glad/glad.c"
+        include/core/GameData.h
+        src/core/GameData.cpp)
 
 # Configure this as a library
 add_library(${PROJECT_NAME} STATIC ${ENGINE_SOURCES} ${ENGINE_HEADERS} ${GLAD_SOURCE})

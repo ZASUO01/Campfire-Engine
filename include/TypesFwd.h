@@ -8,3 +8,5 @@ struct SDLWindowDeleter {
 };
 
 using UniqueSDLWindow = std::unique_ptr<SDL_Window, SDLWindowDeleter>;
+
+class GameData;
