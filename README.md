@@ -1,2 +1,2 @@
-### Campfire Engine Documentation Hub
+## Campfire Engine Documentation Hub
 Welcome to the Campfire Engine documentation. Developed from scratch in C++, using SDL2 for window/input management and OpenGL for the hardware-accelerated rendering pipeline, this engine was designed with a focus on performance, memory control, and a modular architecture for 2D/3D games.
