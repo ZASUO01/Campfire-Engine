@@ -45,6 +45,9 @@ private:
     // Renderer
     std::unique_ptr<Renderer> mRenderer;
 
+    // Resource managers
+    std::unique_ptr<ShadersManager> mShadersManager;
+
     // Game control variables
     GameState mGameState;
     bool mIsRunning;

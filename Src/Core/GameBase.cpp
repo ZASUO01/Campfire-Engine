@@ -4,12 +4,15 @@
 #include "Utils/SDLUtils.h"
 #include "Core/GameData.h"
 #include "Graphics/Renderer/Renderer.h"
+#include "Graphics/Shader/Shader.h"
+#include "Graphics/Shader/ShadersManager.h"
 #include "Math/Random.h"
 
 GameBase::GameBase()
 :mWindow(nullptr)
 ,mGameData(nullptr)
 ,mRenderer(nullptr)
+,mShadersManager(nullptr)
 ,mGameState(GameState::DOWN)
 ,mIsRunning(false)
 ,mTicksCount(0)
@@ -118,11 +121,16 @@ bool GameBase::SetupBase() {
         return false;
     }
 
+    mShadersManager = std::make_unique<ShadersManager>();
+
     return true;
 }
 
 void GameBase::CleanUpBase() {
-
+    mShadersManager.reset();
+    mRenderer.reset();
+    mWindow.reset();
+    mGameData.reset();
 }
 
 void GameBase::ProcessInput() {
