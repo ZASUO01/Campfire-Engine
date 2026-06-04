@@ -76,6 +76,20 @@ set(GLAD_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/External/glad/glad.c"
         Src/Graphics/Shader/ShadersManager.cpp
         Include/Utils/FileUtils.h
         Src/Utils/FileUtils.cpp
+        Include/Graphics/PostEffect/FrameBuffer.h
+        Include/Graphics/Geometry/VertexArray.h
+        Src/Graphics/Geometry/VertexArray.cpp
+        Src/Graphics/PostEffect/FrameBuffer.cpp
+        Include/Graphics/Resources/Texture.h
+        Src/Graphics/Resources/Texture.cpp
+        Include/Graphics/PostEffect/PostEffect.h
+        Src/Graphics/PostEffect/PostEffect.cpp
+        Include/Graphics/PostEffect/PostEffectsManager.h
+        Src/Graphics/PostEffect/PostEffectsManager.cpp
+        Include/Graphics/Renderer/Drawer.h
+        Src/Graphics/Renderer/Drawer.cpp
+        Include/Factories/ObjectFactories.h
+        Src/Factories/ObjectFactories.cpp
 )
 
 # Configure this as a library

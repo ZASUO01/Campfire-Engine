@@ -14,6 +14,7 @@ public:
 
     // Getters
     [[nodiscard]] Renderer* GetRenderer() const { return mRenderer.get(); }
+    [[nodiscard]] ShadersManager* GetShadersManager() const { return mShadersManager.get(); }
 
 protected:
     // Lifecycle methods

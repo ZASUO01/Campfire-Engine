@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include <unordered_map>
-#include <glad/glad.h>
 #include "Math/Math.h"
 
 class Shader {
@@ -17,29 +16,29 @@ public:
     Shader(const Shader&) = delete;
 
     // Getters
-    GLint GetUniformLocation(const std::string& name) const;
-    GLuint GetID() const { return mShaderProgram; }
+    int GetUniformLocation(const std::string& name) const;
+    unsigned int GetID() const { return mShaderProgram; }
 
-    static void SetVectorUniform (GLint location, const Vector2& vector);
-    static void SetVectorUniform (GLint location, const Vector3& vector);
-    static void SetVectorUniform (GLint location, const Vector4& vector);
-    static void SetMatrixUniform(GLint location, const Matrix4& matrix);
-    static void SetFloatUniform(GLint location, float value);
-    static void SetTextureUniform(GLint location, int value);
+    static void SetVectorUniform (int location, const Vector2& vector);
+    static void SetVectorUniform (int location, const Vector3& vector);
+    static void SetVectorUniform (int location, const Vector4& vector);
+    static void SetMatrixUniform(int location, const Matrix4& matrix);
+    static void SetFloatUniform(int location, float value);
+    static void SetTextureUniform(int location, int value);
 private:
     struct UniformInfo {
-        GLint location;
-        GLenum type;
+        int location;
+        unsigned int type;
     };
 
     void Destroy();
     void IntrospectUniforms();
 
-    static bool CompileShader(const std::string& shaderString, GLenum shaderType, GLuint& outShaderID);
-    static bool IsCompiled(GLuint shader);
+    static bool CompileShader(const std::string& shaderString, unsigned int shaderType, unsigned int& outShaderID);
+    static bool IsCompiled(unsigned int shader);
     bool IsValidProgram() const;
 
-    GLuint mShaderProgram;
+    unsigned int mShaderProgram;
 
     std::pmr::unordered_map<std::string, UniformInfo> mUniforms;
 };

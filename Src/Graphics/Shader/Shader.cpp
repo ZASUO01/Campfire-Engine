@@ -1,6 +1,7 @@
 #include "Graphics/Shader/Shader.h"
 #include <SDL_log.h>
 #include <vector>
+#include <glad/glad.h>
 
 Shader::Shader()
 :mShaderProgram(0)
@@ -11,8 +12,8 @@ Shader::~Shader() {
 }
 
 bool Shader::Build(const std::string &vertexShaderString, const std::string &fragmentShaderString) {
-    GLuint vertexShaderID;
-    GLuint fragmentShaderID;
+    unsigned int vertexShaderID;
+    unsigned int fragmentShaderID;
 
     if (!CompileShader(vertexShaderString, GL_VERTEX_SHADER, vertexShaderID) ||
         !CompileShader(fragmentShaderString, GL_FRAGMENT_SHADER, fragmentShaderID)) {
@@ -36,7 +37,7 @@ void Shader::SetActive() const {
     glUseProgram(mShaderProgram);
 }
 
-GLint Shader::GetUniformLocation(const std::string &name) const {
+int Shader::GetUniformLocation(const std::string &name) const {
     if (const auto uniformInfo = mUniforms.find(name); uniformInfo != mUniforms.end()) {
         return uniformInfo->second.location;
     }
@@ -44,31 +45,31 @@ GLint Shader::GetUniformLocation(const std::string &name) const {
     return -1;
 }
 
-void Shader::SetVectorUniform (const GLint location, const Vector2& vector) {
+void Shader::SetVectorUniform (const int location, const Vector2& vector) {
     glUniform2fv(location, 1, vector.GetAsFloatPtr());
 }
 
-void Shader::SetVectorUniform (const GLint location, const Vector3& vector) {
+void Shader::SetVectorUniform (const int location, const Vector3& vector) {
     glUniform3fv(location, 1, vector.GetAsFloatPtr());
 }
 
 
-void Shader::SetVectorUniform (const GLint location, const Vector4& vector) {
+void Shader::SetVectorUniform (const int location, const Vector4& vector) {
     glUniform4fv(location, 1, vector.GetAsFloatPtr());
 }
 
 
-void Shader::SetMatrixUniform(const GLint location, const Matrix4& matrix){
+void Shader::SetMatrixUniform(const int location, const Matrix4& matrix){
     glUniformMatrix4fv(location, 1, GL_FALSE, matrix.GetAsFloatPtr());
 }
 
 
-void Shader::SetFloatUniform(const GLint location, const float value) {
+void Shader::SetFloatUniform(const int location, const float value) {
     glUniform1f(location, value);
 }
 
 
-void Shader::SetTextureUniform(const GLint location, const int value) {
+void Shader::SetTextureUniform(const int location, const int value) {
     glUniform1i(location, value);
 }
 
@@ -83,30 +84,30 @@ void Shader::Destroy() {
 void Shader::IntrospectUniforms() {
     mUniforms.clear();
 
-    GLint numUniforms = 0;
+    int numUniforms = 0;
     glGetProgramiv(mShaderProgram, GL_ACTIVE_UNIFORMS, &numUniforms);
 
-    GLint maxNameLength = 0;
+    int maxNameLength = 0;
     glGetProgramiv(mShaderProgram, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxNameLength);
 
     std::vector<GLchar> nameBuffer(maxNameLength);
 
-    for (GLint i = 0; i < numUniforms; ++i) {
+    for (int i = 0; i < numUniforms; ++i) {
         GLsizei length;
-        GLint size;
-        GLenum type;
+        int size;
+        unsigned int type;
 
         glGetActiveUniform(mShaderProgram, i, static_cast<int>(nameBuffer.size()), &length, &size, &type, nameBuffer.data());
 
         std::string name(nameBuffer.data(), length);
 
-        const GLint location = glGetUniformLocation(mShaderProgram, name.c_str());
+        const int location = glGetUniformLocation(mShaderProgram, name.c_str());
 
         mUniforms[name] = { location, type };
     }
 }
 
-bool Shader::CompileShader(const std::string &shaderString, const GLenum shaderType, GLuint &outShaderID) {
+bool Shader::CompileShader(const std::string &shaderString, const unsigned int shaderType, unsigned int &outShaderID) {
     const char* contentsChar = shaderString.c_str();
 
     // Create a shader of the specified type
@@ -124,8 +125,8 @@ bool Shader::CompileShader(const std::string &shaderString, const GLenum shaderT
     return true;
 }
 
-bool Shader::IsCompiled(const GLuint shader) {
-    GLint status = 0;
+bool Shader::IsCompiled(const unsigned int shader) {
+    int status = 0;
 
     // Query the compile status
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
@@ -139,7 +140,7 @@ bool Shader::IsCompiled(const GLuint shader) {
 }
 
 bool Shader::IsValidProgram() const {
-    GLint status = 0;
+    int status = 0;
 
     // Query the link status
     glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &status);

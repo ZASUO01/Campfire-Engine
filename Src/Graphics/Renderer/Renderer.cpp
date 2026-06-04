@@ -2,11 +2,17 @@
 #include <SDL2/SDL.h>
 #include <glad/glad.h>
 #include "Utils/SDLUtils.h"
+#include "Graphics/PostEffect/PostEffectsManager.h"
+#include "Graphics/PostEffect/FrameBuffer.h"
+#include "Graphics/Renderer/Drawer.h"
 
 Renderer::Renderer(SDL_Window *window, const int width, const int height)
 :mScreenWidth(width)
 ,mScreenHeight(height)
 ,mWindow(window)
+,mDrawer(nullptr)
+,mPostEffectsManager(nullptr)
+,mFrameBuffer(nullptr)
 {}
 
 Renderer::~Renderer() = default;
@@ -36,12 +42,31 @@ bool Renderer::Init() {
         return false;
     }
 
+    mPostEffectsManager = std::make_unique<PostEffectsManager>();
+    mFrameBuffer = std::make_unique<FrameBuffer>(mScreenWidth, mScreenHeight);
+
+    mDrawer = std::make_unique<Drawer>();
+
     // Set clear color
     glClearColor(CLEAR_COLOR.x, CLEAR_COLOR.y, CLEAR_COLOR.z, CLEAR_COLOR.w);
     return true;
 }
 
 void Renderer::Draw() {
+    // Enable frame buffer to draw elements and apply post effects later if enabled
+    if (mPostEffectsManager->CanUseEffects()) {
+        mFrameBuffer->Bind();
+    }
     glClear(GL_COLOR_BUFFER_BIT);
+
+    // Apply post effect case enabled
+    if (mPostEffectsManager->CanUseEffects()) {
+        FrameBuffer::Unbind();
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        mDrawer->DrawPostPass(mPostEffectsManager->GetCurrentEffect(), mFrameBuffer->GetTexture());
+   }
+
+    // Swap back buffer to front
     SDL_GL_SwapWindow(mWindow);
 }
