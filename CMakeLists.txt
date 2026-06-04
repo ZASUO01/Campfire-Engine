@@ -50,8 +50,15 @@ FetchContent_MakeAvailable(SDL2 SDL_image SDL_ttf SDL_mixer)
 #### Project dependencies configuration ####
 
 # Configure file sources
-file(GLOB_RECURSE ENGINE_HEADERS CONFIGURE_DEPENDS "include/*.h")
-file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS "src/*.cpp")
+file(GLOB_RECURSE ENGINE_HEADERS CONFIGURE_DEPENDS
+        "include/*.h"
+        "include/core/*.h"
+        "include/utils/*.h"
+)
+file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS
+        "src/core/*.cpp"
+        "src/utils/*.cpp"
+)
 
 # The GLAD library will be compiled together the source codes
 set(GLAD_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/external/glad/glad.c")
@@ -59,13 +66,15 @@ set(GLAD_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/external/glad/glad.c")
 # Configure this as a library
 add_library(${PROJECT_NAME} STATIC ${ENGINE_SOURCES} ${ENGINE_HEADERS} ${GLAD_SOURCE})
 
-# Configure the engine headers as the public API
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-
-# External header only libraries only accessible by this project
-target_include_directories(${PROJECT_NAME} PRIVATE
+# Configure headers location internally and externally
+target_include_directories(${PROJECT_NAME}
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${CMAKE_CURRENT_SOURCE_DIR}/external
         ${CMAKE_CURRENT_SOURCE_DIR}/external/glad
+
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
 # The engine uses this libraries internally
