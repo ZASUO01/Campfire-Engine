@@ -1,4 +1,4 @@
-#include "Core/GameData.h"
+#include "CampfireEngine/Core/GameData.h"
 
 GameData::GameData()
 :mMainConfig({}) {

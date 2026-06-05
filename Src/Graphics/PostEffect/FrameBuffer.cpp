@@ -1,5 +1,5 @@
-#include "Graphics/PostEffect/FrameBuffer.h"
-#include "Graphics/Resources/Texture.h"
+#include "FrameBuffer.h"
+#include "CampfireEngine/Graphics/Resources/Texture.h"
 #include <glad/glad.h>
 #include <SDL2/SDL_log.h>
 

@@ -1,6 +1,6 @@
 #pragma once
-#include "Types/SDLTypesFwd.h"
-#include "Types/TypesFwd.h"
+#include "CampfireEngine/Types/SDLTypesFwd.h"
+#include "CampfireEngine/Types/TypesFwd.h"
 
 class GameBase {
 public:
@@ -13,8 +13,8 @@ public:
     void Shutdown();
 
     // Getters
-    [[nodiscard]] Renderer* GetRenderer() const { return mRenderer.get(); }
-    [[nodiscard]] ShadersManager* GetShadersManager() const { return mShadersManager.get(); }
+    [[nodiscard]] RendererSystem& GetRendererSystem() const;
+    [[nodiscard]] ShadersSystem& GetShadersSystem() const;
 
 protected:
     // Lifecycle methods
@@ -43,11 +43,12 @@ private:
     // Game configuration
     std::unique_ptr<GameData> mGameData;
 
-    // Renderer
+    // Renderer System
     std::unique_ptr<Renderer> mRenderer;
 
-    // Resource managers
+    // Resource management systems
     std::unique_ptr<ShadersManager> mShadersManager;
+    std::unique_ptr<PostEffectsManager> mPostEffectsManager;
 
     // Game control variables
     GameState mGameState;

@@ -1,18 +1,20 @@
-#include "GameBase.h"
-#include <memory>
+#include "CampfireEngine/GameBase.h"
 #include <SDL2/SDL.h>
 #include "Utils/SDLUtils.h"
-#include "Core/GameData.h"
+#include "CampfireEngine/Core/GameData.h"
 #include "Graphics/Renderer/Renderer.h"
-#include "Graphics/Shader/Shader.h"
 #include "Graphics/Shader/ShadersManager.h"
-#include "Math/Random.h"
+#include "CampfireEngine/Math/Math.h"
+#include <memory>
+#include "CampfireEngine/Math/Random.h"
+#include "Graphics/PostEffect/PostEffectsManager.h"
 
 GameBase::GameBase()
 :mWindow(nullptr)
 ,mGameData(nullptr)
 ,mRenderer(nullptr)
 ,mShadersManager(nullptr)
+,mPostEffectsManager(nullptr)
 ,mGameState(GameState::DOWN)
 ,mIsRunning(false)
 ,mTicksCount(0)
@@ -87,6 +89,14 @@ void GameBase::Shutdown() {
     SDLUtils::ShutdownSubSystems();
 }
 
+RendererSystem &GameBase::GetRendererSystem() const {
+    return *mRenderer;
+}
+
+ShadersSystem& GameBase::GetShadersSystem() const {
+    return *mShadersManager;
+}
+
 void SDLWindowDeleter::operator()(SDL_Window* window) const{
     SDLUtils::SDLWindowDeleter()(window);
 }
@@ -122,6 +132,7 @@ bool GameBase::SetupBase() {
     }
 
     mShadersManager = std::make_unique<ShadersManager>();
+    mPostEffectsManager = std::make_unique<PostEffectsManager>();
 
     return true;
 }

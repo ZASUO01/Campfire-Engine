@@ -1,6 +1,7 @@
-#include "Graphics/Shader/ShadersManager.h"
-#include "Graphics/Shader/Shader.h"
+#include "ShadersManager.h"
+#include "CampfireEngine/Graphics/Shader/Shader.h"
 
+ShadersManager::ShadersManager() = default;
 ShadersManager::~ShadersManager() = default;
 
 Shader *ShadersManager::GetShader(const std::string &name) {

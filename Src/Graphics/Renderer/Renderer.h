@@ -1,14 +1,15 @@
 #pragma once
-#include "Math/Math.h"
-#include "Types/SDLTypesFwd.h"
+#include "CampfireEngine/Math/Math.h"
+#include "CampfireEngine/Subsystems/RendererSystem.h"
+#include "CampfireEngine/Types/SDLTypesFwd.h"
 
-class Renderer {
+class Renderer : public RendererSystem{
 public:
     Renderer(SDL_Window* window, int width, int height);
-    ~Renderer();
+    ~Renderer() override;
 
     [[nodiscard]] bool Init();
-    void Draw();
+    void Draw() override;
 
     [[nodiscard]] class PostEffectsManager* GetPostEffectsManager() const { return mPostEffectsManager.get(); }
 private:

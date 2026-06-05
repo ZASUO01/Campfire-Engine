@@ -1,10 +1,11 @@
-#include "Graphics/Renderer/Renderer.h"
+#include "Renderer.h"
 #include <SDL2/SDL.h>
 #include <glad/glad.h>
 #include "Utils/SDLUtils.h"
 #include "Graphics/PostEffect/PostEffectsManager.h"
 #include "Graphics/PostEffect/FrameBuffer.h"
-#include "Graphics/Renderer/Drawer.h"
+#include "Drawer.h"
+#include "CampfireEngine/Graphics/PostEffect/PostEffect.h"
 
 Renderer::Renderer(SDL_Window *window, const int width, const int height)
 :mScreenWidth(width)

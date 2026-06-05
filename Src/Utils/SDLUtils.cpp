@@ -1,4 +1,4 @@
-#include "Utils/SDLUtils.h"
+#include "SDLUtils.h"
 #include <SDL2/SDL_log.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>

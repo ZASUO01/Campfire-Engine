@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <unordered_map>
-#include "Math/Math.h"
+#include "CampfireEngine/Math/Math.h"
 
 class Shader {
 public:
@@ -40,5 +40,5 @@ private:
 
     unsigned int mShaderProgram;
 
-    std::pmr::unordered_map<std::string, UniformInfo> mUniforms;
+    std::unordered_map<std::string, UniformInfo> mUniforms;
 };

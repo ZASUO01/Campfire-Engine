@@ -1,4 +1,4 @@
-#include "Graphics/Geometry/VertexArray.h"
+#include "VertexArray.h"
 #include  "glad/glad.h"
 
 VertexArray::VertexArray(const float *vertices, const unsigned int numVertices, const unsigned int *indices,

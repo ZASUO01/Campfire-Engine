@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "Math/Math.h"
+#include "CampfireEngine/Math/Math.h"
 
 class UniformsBlock {
 public:

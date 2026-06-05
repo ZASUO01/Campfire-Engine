@@ -1,5 +1,5 @@
-#include "Graphics/Shader/UniformsBlock.h"
-#include "Graphics/Shader/Shader.h"
+#include "CampfireEngine/Graphics/Shader/UniformsBlock.h"
+#include "CampfireEngine/Graphics/Shader/Shader.h"
 
 void UniformsBlock::SetFloat(const Shader* shader, const std::string& name, const float value) {
     if (!shader) {

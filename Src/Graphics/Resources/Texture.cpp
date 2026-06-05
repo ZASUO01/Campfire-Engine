@@ -1,4 +1,4 @@
-#include "Graphics/Resources/Texture.h"
+#include "CampfireEngine/Graphics/Resources/Texture.h"
 
 Texture::Texture()
 :mTextureID(0)

@@ -1,9 +1,9 @@
-#include "Graphics/Renderer/Drawer.h"
+#include "Drawer.h"
 #include "glad/glad.h"
 #include "Graphics/Geometry/VertexArray.h"
-#include "Graphics/PostEffect/PostEffect.h"
-#include "Graphics/Resources/Texture.h"
-#include "Graphics/Shader/Shader.h"
+#include "CampfireEngine/Graphics/PostEffect/PostEffect.h"
+#include "CampfireEngine/Graphics/Resources/Texture.h"
+#include "CampfireEngine/Graphics/Shader/Shader.h"
 
 Drawer::Drawer(){
     GenerateFullQuadVertices();

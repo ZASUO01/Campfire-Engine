@@ -1,5 +1,5 @@
-#include "Graphics/PostEffect/PostEffect.h"
-#include "Graphics/Shader/UniformsBlock.h"
+#include "CampfireEngine/Graphics/PostEffect/PostEffect.h"
+#include "CampfireEngine/Graphics/Shader/UniformsBlock.h"
 
 PostEffect::PostEffect(Shader* shader, const std::string& name)
 :mName(name) {

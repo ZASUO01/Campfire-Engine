@@ -1,4 +1,4 @@
-#include "Graphics/Shader/Shader.h"
+#include "CampfireEngine/Graphics/Shader/Shader.h"
 #include <SDL_log.h>
 #include <vector>
 #include <glad/glad.h>

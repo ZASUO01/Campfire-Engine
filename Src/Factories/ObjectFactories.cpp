@@ -1,7 +1,7 @@
-#include "Factories/ObjectFactories.h"
-#include "Graphics/Shader/Shader.h"
+#include "CampfireEngine/Factories/ObjectFactories.h"
+#include "CampfireEngine/GameBase.h"
+#include "CampfireEngine/Graphics/Shader/Shader.h"
 #include "Utils/FileUtils.h"
-#include "GameBase.h"
 #include "Graphics/Shader/ShadersManager.h"
 
 Shader *ObjectFactories::BuildShader(const GameBase *game, const std::string &name) {
@@ -16,13 +16,13 @@ Shader *ObjectFactories::BuildShader(const GameBase *game, const std::string &na
         return nullptr;
     }
 
-    const auto shader = game->GetShadersManager()->GetShader(name);
+    const auto shader = game->GetShadersSystem().GetShader(name);
     if (!shader) {
         return nullptr;
     }
 
     if (!shader->Build(vertShaderString, fragShaderString)) {
-        game->GetShadersManager()->RemoveShader(name);
+        game->GetShadersSystem().RemoveShader(name);
         return nullptr;
     }
 

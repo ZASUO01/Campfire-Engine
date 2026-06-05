@@ -1,14 +1,11 @@
-#include "Graphics/PostEffect/PostEffectsManager.h"
-#include "Graphics/PostEffect/PostEffect.h"
+#include "PostEffectsManager.h"
+#include "CampfireEngine/Graphics/PostEffect/PostEffect.h"
 
 PostEffectsManager::PostEffectsManager()
 :mCurrentEffect(nullptr)
 {}
 
-PostEffectsManager::~PostEffectsManager() {
-    ClearEffects();
-}
-
+PostEffectsManager::~PostEffectsManager() = default;
 
 PostEffect *PostEffectsManager::GetEffect(const std::string& name) const {
     if (const auto it = mPostEffects.find(name); it != mPostEffects.end()) {

@@ -50,47 +50,18 @@ FetchContent_MakeAvailable(SDL2 SDL_image SDL_ttf SDL_mixer)
 #### Project dependencies configuration ####
 
 # Configure file sources
-file(GLOB_RECURSE ENGINE_HEADERS CONFIGURE_DEPENDS
-        "Include/Core/*.h"
-        "Include/Graphics/*.h"
-        "Include/Graphics/Renderer/*.h"
-        "Include/Math/*.h"
-        "Include/Types/*.h"
-        "Include/Utils/*.h"
-)
+file(GLOB_RECURSE ENGINE_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h")
+
 file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS
-        "Src/Core/*.cpp"
-        "Src/Graphics/*.cpp"
-        "Src/Graphics/Renderer/*.cppp"
-        "Src/Math/*.cpp"
-        "Src/Utils/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Src/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Src/*.h"
 )
 
 # The GLAD library will be compiled together the source codes
 set(GLAD_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/External/glad/glad.c"
-        Include/Graphics/Shader/Shader.h
-        Src/Graphics/Shader/Shader.cpp
-        Include/Graphics/Shader/UniformsBlock.h
-        Src/Graphics/Shader/UniformsBlock.cpp
-        Include/Graphics/Shader/ShadersManager.h
-        Src/Graphics/Shader/ShadersManager.cpp
-        Include/Utils/FileUtils.h
-        Src/Utils/FileUtils.cpp
-        Include/Graphics/PostEffect/FrameBuffer.h
-        Include/Graphics/Geometry/VertexArray.h
-        Src/Graphics/Geometry/VertexArray.cpp
-        Src/Graphics/PostEffect/FrameBuffer.cpp
-        Include/Graphics/Resources/Texture.h
-        Src/Graphics/Resources/Texture.cpp
-        Include/Graphics/PostEffect/PostEffect.h
-        Src/Graphics/PostEffect/PostEffect.cpp
-        Include/Graphics/PostEffect/PostEffectsManager.h
-        Src/Graphics/PostEffect/PostEffectsManager.cpp
-        Include/Graphics/Renderer/Drawer.h
-        Src/Graphics/Renderer/Drawer.cpp
-        Include/Factories/ObjectFactories.h
-        Src/Factories/ObjectFactories.cpp
-)
+        Include/CampfireEngine/Subsystems/ShadersSystem.h
+        Include/CampfireEngine/Subsystems/RendererSystem.h
+        Include/CampfireEngine/Subsystems/PostEffectsSystem.h)
 
 # Configure this as a library
 add_library(${PROJECT_NAME} STATIC ${ENGINE_SOURCES} ${ENGINE_HEADERS} ${GLAD_SOURCE})
@@ -98,12 +69,11 @@ add_library(${PROJECT_NAME} STATIC ${ENGINE_SOURCES} ${ENGINE_HEADERS} ${GLAD_SO
 # Configure headers location internally and externally
 target_include_directories(${PROJECT_NAME}
         PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/Include
-        ${CMAKE_CURRENT_SOURCE_DIR}/External
-        ${CMAKE_CURRENT_SOURCE_DIR}/External/glad
+        "${CMAKE_CURRENT_SOURCE_DIR}/Src"
+        "${CMAKE_CURRENT_SOURCE_DIR}/External/glad"
 
         PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>"
 )
 
 # The engine uses this libraries internally
@@ -115,4 +85,4 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         ${CMAKE_DL_LIBS}
 )
 
-message(STATUS "Campfire Engine successfully configure to compile")
+message(STATUS "Campfire Engine successfully configured to compile")
