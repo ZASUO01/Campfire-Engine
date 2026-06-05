@@ -1,12 +1,14 @@
 #pragma once
 #include <memory>
 
+#include "RendererUtils.h"
+
 class Drawer {
 public:
     Drawer();
     ~Drawer();
 
-    void DrawPostPass(class PostEffect *effect, const class Texture *texture) const;
+    void DrawPostPass(const RendererUtils::PostEffectCommand &cmd, const class Texture* texture) const;
 
 private:
     void GenerateFullQuadVertices();

@@ -15,6 +15,7 @@ public:
     // Getters
     [[nodiscard]] RendererSystem& GetRendererSystem() const;
     [[nodiscard]] ShadersSystem& GetShadersSystem() const;
+    [[nodiscard]] PostEffectsSystem& GetPostEffectsSystem() const;
 
 protected:
     // Lifecycle methods
@@ -34,7 +35,7 @@ private:
 
     // Looping operations
     void ProcessInput();
-    void UpdateGameBase(float deltaTime);
+    void UpdateGameBase(float deltaTime) const;
     void GenerateOutput() const;
 
     // System window

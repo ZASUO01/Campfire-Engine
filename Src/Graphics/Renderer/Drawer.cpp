@@ -11,7 +11,7 @@ Drawer::Drawer(){
 
 Drawer::~Drawer() = default;
 
-void Drawer::DrawPostPass(PostEffect *effect, const Texture* texture) const {
+void Drawer::DrawPostPass(const RendererUtils::PostEffectCommand &cmd, const Texture* texture) const {
     if (!mFullQuadVertices) {
         return;
     }
@@ -19,9 +19,15 @@ void Drawer::DrawPostPass(PostEffect *effect, const Texture* texture) const {
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
 
-    const auto shader = effect->GetShader();
+    const auto shader = cmd.shader;
+    if (!shader) {
+        return;
+    }
     shader->SetActive();
-    effect->ApplyUniforms();
+
+    if (const auto block = cmd.block) {
+        block->ApplyUniforms();
+    }
 
     if (texture) {
         texture->SetActive();

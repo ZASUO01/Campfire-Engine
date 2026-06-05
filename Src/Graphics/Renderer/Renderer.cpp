@@ -5,15 +5,14 @@
 #include "Graphics/PostEffect/PostEffectsManager.h"
 #include "Graphics/PostEffect/FrameBuffer.h"
 #include "Drawer.h"
-#include "CampfireEngine/Graphics/PostEffect/PostEffect.h"
 
 Renderer::Renderer(SDL_Window *window, const int width, const int height)
 :mScreenWidth(width)
 ,mScreenHeight(height)
 ,mWindow(window)
 ,mDrawer(nullptr)
-,mPostEffectsManager(nullptr)
 ,mFrameBuffer(nullptr)
+,mPostEffectCommand({})
 {}
 
 Renderer::~Renderer() = default;
@@ -43,7 +42,6 @@ bool Renderer::Init() {
         return false;
     }
 
-    mPostEffectsManager = std::make_unique<PostEffectsManager>();
     mFrameBuffer = std::make_unique<FrameBuffer>(mScreenWidth, mScreenHeight);
 
     mDrawer = std::make_unique<Drawer>();
@@ -53,21 +51,29 @@ bool Renderer::Init() {
     return true;
 }
 
-void Renderer::Draw() {
-    // Enable frame buffer to draw elements and apply post effects later if enabled
-    if (mPostEffectsManager->CanUseEffects()) {
+void Renderer::SetRenderTarget(const RenderTarget target) const {
+    if (target == RenderTarget::PostProcess) {
         mFrameBuffer->Bind();
+        return;
     }
+
+    FrameBuffer::Unbind();
+}
+
+void Renderer::Clear() {
     glClear(GL_COLOR_BUFFER_BIT);
+}
 
-    // Apply post effect case enabled
-    if (mPostEffectsManager->CanUseEffects()) {
-        FrameBuffer::Unbind();
-        glClear(GL_COLOR_BUFFER_BIT);
+void Renderer::Draw() {
 
-        mDrawer->DrawPostPass(mPostEffectsManager->GetCurrentEffect(), mFrameBuffer->GetTexture());
-   }
+}
 
-    // Swap back buffer to front
+void Renderer::PostDraw() const {
+    const auto tex = mFrameBuffer->GetTexture();
+
+    mDrawer->DrawPostPass(mPostEffectCommand, tex);
+}
+
+void Renderer::Present() const {
     SDL_GL_SwapWindow(mWindow);
 }

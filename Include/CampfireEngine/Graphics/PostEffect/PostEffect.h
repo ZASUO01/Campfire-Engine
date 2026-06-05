@@ -3,15 +3,16 @@
 
 class PostEffect {
 public:
-    explicit PostEffect(class Shader *shader, const std::string& name);
+    explicit PostEffect(class Shader *shader, std::string  name);
     virtual ~PostEffect();
 
     [[nodiscard]] Shader* GetShader() const { return mShader; }
-    void ApplyUniforms();
+    void Update(float deltaTime, class RendererSystem *renderer);
 
     [[nodiscard]] const std::string& GetName() const { return mName; }
 protected:
-    virtual void SetupUniforms() = 0;
+    virtual void UpdateUniforms(float deltaTime, uint32_t totalTicks) = 0;
+    void SendRenderCommand(RendererSystem *renderer) const;
 
     Shader* mShader;
     std::unique_ptr<class UniformsBlock> mUniformsBlock;

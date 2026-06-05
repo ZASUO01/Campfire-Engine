@@ -4,8 +4,8 @@
 #include "CampfireEngine/Core/GameData.h"
 #include "Graphics/Renderer/Renderer.h"
 #include "Graphics/Shader/ShadersManager.h"
-#include "CampfireEngine/Math/Math.h"
 #include <memory>
+#include "CampfireEngine/Graphics/PostEffect/PostEffect.h"
 #include "CampfireEngine/Math/Random.h"
 #include "Graphics/PostEffect/PostEffectsManager.h"
 
@@ -97,6 +97,10 @@ ShadersSystem& GameBase::GetShadersSystem() const {
     return *mShadersManager;
 }
 
+PostEffectsSystem &GameBase::GetPostEffectsSystem() const {
+    return *mPostEffectsManager;
+}
+
 void SDLWindowDeleter::operator()(SDL_Window* window) const{
     SDLUtils::SDLWindowDeleter()(window);
 }
@@ -157,11 +161,25 @@ void GameBase::ProcessInput() {
     }
 }
 
-void GameBase::UpdateGameBase(const float deltaTime) {
-    // TODO
+void GameBase::UpdateGameBase(const float deltaTime) const {
+    if (mPostEffectsManager->CanUseEffects()) {
+        mPostEffectsManager->GetCurrentEffect()->Update(deltaTime, mRenderer.get());
+    }
 }
 
 void GameBase::GenerateOutput() const {
+    if (mPostEffectsManager->CanUseEffects()) {
+        mRenderer->SetRenderTarget(Renderer::RenderTarget::PostProcess);
+    }
+    Renderer::Clear();
+
     mRenderer->Draw();
+
+    if (mPostEffectsManager->CanUseEffects()) {
+        mRenderer->SetRenderTarget(Renderer::RenderTarget::Screen);
+        Renderer::Clear();
+        mRenderer->PostDraw();
+    }
+    mRenderer->Present();
 }
 

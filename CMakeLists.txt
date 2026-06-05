@@ -61,7 +61,8 @@ file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS
 set(GLAD_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/External/glad/glad.c"
         Include/CampfireEngine/Subsystems/ShadersSystem.h
         Include/CampfireEngine/Subsystems/RendererSystem.h
-        Include/CampfireEngine/Subsystems/PostEffectsSystem.h)
+        Include/CampfireEngine/Subsystems/PostEffectsSystem.h
+        Src/Graphics/Renderer/RendererUtils.h)
 
 # Configure this as a library
 add_library(${PROJECT_NAME} STATIC ${ENGINE_SOURCES} ${ENGINE_HEADERS} ${GLAD_SOURCE})
