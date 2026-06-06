@@ -1,8 +1,13 @@
 #pragma once
 
 class GameData;
+
 class RendererSystem;
 class Renderer;
+
+class ScenesSystem;
+class ScenesManager;
+
 class ShadersSystem;
 class ShadersManager;
 class AssetsSystem;

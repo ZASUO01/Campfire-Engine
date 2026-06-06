@@ -9,12 +9,15 @@
 #include "CampfireEngine/Math/Random.h"
 #include "Graphics/PostEffect/PostEffectsManager.h"
 #include "Assets/AssetsManager.h"
+#include "CampfireEngine/Scenes/Scene.h"
 #include "Sound/Synthesizer.h"
+#include "Scenes/ScenesManager.h"
 
 GameBase::GameBase()
 :mWindow(nullptr)
 ,mGameData(nullptr)
 ,mRenderer(nullptr)
+,mScenesManager(nullptr)
 ,mShadersManager(nullptr)
 ,mAssetsManager(nullptr)
 ,mPostEffectsManager(nullptr)
@@ -69,9 +72,26 @@ void GameBase::RunLoop() {
         }
         mTicksCount = frameStartTicks;
 
-        ProcessInput();
-        UpdateGameBase(deltaTime);
-        GenerateOutput();
+        mScenesManager->UpdateState();
+
+        switch (mScenesManager->GetSceneState()) {
+            case ScenesManager::State::IDLE:
+                // IDLE
+                break;
+            case ScenesManager::State::LOADING:
+            case ScenesManager::State::LOADED:
+                // LOADING
+                break;
+            case ScenesManager::State::READY:
+                ProcessInput();
+                UpdateGameBase(deltaTime);
+                GenerateOutput();
+                break;
+            default:
+                break;
+        }
+
+
 
         const Uint32 frameElapsedTicks = SDL_GetTicks() - frameStartTicks;
 
@@ -95,6 +115,10 @@ void GameBase::Shutdown() {
 
 RendererSystem &GameBase::GetRendererSystem() const {
     return *mRenderer;
+}
+
+ScenesSystem &GameBase::GetScenesSystem() const {
+    return *mScenesManager;
 }
 
 ShadersSystem& GameBase::GetShadersSystem() const {
@@ -147,6 +171,7 @@ bool GameBase::SetupBase() {
         return false;
     }
 
+    mScenesManager = std::make_unique<ScenesManager>(this);
     mShadersManager = std::make_unique<ShadersManager>();
     mAssetsManager = std::make_unique<AssetsManager>();
     mPostEffectsManager = std::make_unique<PostEffectsManager>();

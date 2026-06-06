@@ -14,6 +14,7 @@ public:
 
     // Getters
     [[nodiscard]] RendererSystem& GetRendererSystem() const;
+    [[nodiscard]] ScenesSystem& GetScenesSystem() const;
     [[nodiscard]] ShadersSystem& GetShadersSystem() const;
     [[nodiscard]] AssetsSystem& GetAssetsSystem() const;
     [[nodiscard]] PostEffectsSystem& GetPostEffectsSystem() const;
@@ -51,6 +52,7 @@ private:
     std::unique_ptr<Renderer> mRenderer;
 
     // Resource management systems
+    std::unique_ptr<ScenesManager> mScenesManager;
     std::unique_ptr<ShadersManager> mShadersManager;
     std::unique_ptr<AssetsManager> mAssetsManager;
     std::unique_ptr<PostEffectsManager> mPostEffectsManager;
