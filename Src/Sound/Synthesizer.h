@@ -2,6 +2,7 @@
 #include <SDL2/SDL_audio.h>
 #include "CampfireEngine/Subsystems/SynthesizerSystem.h"
 #include "CampfireEngine/Sound/SynthUtils.h"
+#include <memory>
 
 class Synthesizer : public SynthesizerSystem{
 public:
@@ -10,11 +11,14 @@ public:
 
     [[nodiscard]] bool Init();
     void Update();
-    void PlayNote(SynthUtils::Note note, int octave, float duration, const SynthUtils::Timbre& timbre) override;
+
+    void SetTimbre(std::unique_ptr<Timbre> timbre) override;
+    void PlayNote(SynthUtils::Note note, int octave, float duration) override;
     void StopNote() override;
 
 private:
     void Shutdown();
+    void GenerateRawSamples(float& sampleL, float& sampleR);
     static float GetFrequencyFromNote(SynthUtils::Note note, int octave);
     static float GenerateBasicWave(SynthUtils::WaveformType type, float phase);
 
@@ -22,7 +26,7 @@ private:
     float mSampleTimeStep;
     SDL_AudioDeviceID mDeviceID;
 
-    SynthUtils::Timbre mTimbre;
+    std::unique_ptr<Timbre> mTimbre;
     bool mIsPlaying;
     float mTimePlayed;
     float mDuration;
@@ -31,8 +35,10 @@ private:
     float mPhaseR;
 
     // Constants
-    static constexpr int SAFETY_SAMPLE_IN_QUEUE = 4096;
-    static constexpr int REPLACEMENT_CHUNK_SIZE = 512;
+    static constexpr int SAFETY_QUEUE_BYTE_SIZE =  4096 * 2 * sizeof(float);// 4096 bytes * 2 channels * float bytesize
+    static constexpr int CHUNK_UNIT_SIZE = 512; // 512 bytes
+    static constexpr int CHUNK_SIZE = CHUNK_UNIT_SIZE * 2; // 512 bytes * 2 channels
+    static  constexpr int CHUNK_BYTE_SIZE = CHUNK_SIZE * sizeof(float); // 512 bytes * 2 channels * float bytesize
 };
 
 

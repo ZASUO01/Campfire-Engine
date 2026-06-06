@@ -1,11 +1,12 @@
 #include "Synthesizer.h"
 #include <SDL_log.h>
 #include "CampfireEngine/Math/Math.h"
+#include "CampfireEngine/Sound/Timbre.h"
 
 Synthesizer::Synthesizer(const int sampleRate)
 :mSampleRate(sampleRate)
 ,mDeviceID(0)
-,mTimbre({})
+,mTimbre(nullptr)
 ,mIsPlaying(false)
 ,mTimePlayed(0)
 ,mDuration(0)
@@ -31,7 +32,7 @@ bool Synthesizer::Init() {
     spec.channels = 2;
 
     // Two 512 size samples (L and R)
-    spec.samples = 2 * REPLACEMENT_CHUNK_SIZE;
+    spec.samples = CHUNK_SIZE;
 
     // using the SDL_AudioStream instead of old callbacks
     spec.callback = nullptr;
@@ -49,67 +50,50 @@ bool Synthesizer::Init() {
 }
 
 void Synthesizer::Update() {
-    if (!mIsPlaying) {
-        return;
-    }
-
-    // safety queue size for two channels (L and R)
-    constexpr int targetBytes = SAFETY_SAMPLE_IN_QUEUE * 2 * sizeof(float);
-    constexpr int chunkSize = REPLACEMENT_CHUNK_SIZE * 2;
-    constexpr int chunkSizeBytes = chunkSize * sizeof(float);
-
-    while(SDL_GetQueuedAudioSize(mDeviceID) + chunkSizeBytes <= targetBytes) {
-        if (!mIsPlaying) {
-            break;
-        }
-
-        // Size to be replaced in the queue
-        float buffer[chunkSize];
+    uint32_t queuedBytes = SDL_GetQueuedAudioSize(mDeviceID);
+    while(queuedBytes + CHUNK_BYTE_SIZE <= SAFETY_QUEUE_BYTE_SIZE) {
+        float buffer[CHUNK_SIZE];
         int bufferIndex = 0;
 
-        // Get the new buffer from the last calculated data
-        for (int i = 0; i < REPLACEMENT_CHUNK_SIZE; ++i) {
-            mTimePlayed += mSampleTimeStep;
-
-            // Stop generating data and fill the rest with silence
-            if (mTimePlayed >= mDuration) {
-                mIsPlaying = false;
-                while (bufferIndex < chunkSize) {
-                    buffer[bufferIndex++] = 0.0f;
-                }
-                break;
+        for (int i = 0; i < CHUNK_UNIT_SIZE; ++i) {
+            if (mIsPlaying) {
+                mTimePlayed += mSampleTimeStep;
             }
 
-            // apply detune for both sides
-            const float leftFrequency = mFrequency - mFrequency * mTimbre.detune * 0.005f;
-            const float rightFrequency = mFrequency + mFrequency * mTimbre.detune * 0.005f;
+            float sampleL = 0.0f;
+            float sampleR = 0.0f;
 
-            // phase advance
-            mPhaseL += leftFrequency * mSampleTimeStep;
-            mPhaseL =  std::modf(mPhaseL, &mPhaseL);
+            if (mTimbre) {
+                GenerateRawSamples(sampleL, sampleR);
+                mTimbre->ApplyLFO(sampleL, sampleR, mSampleTimeStep);
+                mTimbre->ApplyADSR(sampleL, sampleR, mSampleTimeStep, mTimePlayed, mDuration, mIsPlaying);
+                mTimbre->ApplyLowPassFilter(sampleL, sampleR);
+                mTimbre->ApplyDelay(sampleL, sampleR);
+                mTimbre->ApplyReverb(sampleL, sampleR);
 
-            mPhaseR += rightFrequency * mSampleTimeStep;
-            mPhaseR = std::modf(mPhaseR, &mPhaseR);
+                if (sampleL == 0.0f && sampleR == 0.0f && mTimePlayed >= mDuration) {
+                    mIsPlaying = false;
+                    mFrequency = 0.0f;
+                    mPhaseL = 0.0f;
+                    mPhaseR = 0.0f;
+                }
+            }
 
-            // generate waves
-            float valueL = GenerateBasicWave(mTimbre.oscillator1Type, mPhaseL);
-            float valueR = GenerateBasicWave(mTimbre.oscillator2Type, mPhaseR);
-
-            // apply timbre volume
-            valueL *= mTimbre.volume;
-            valueR *= mTimbre.volume;
-
-            // distribute the values in the buffer
-            buffer[bufferIndex++] = valueL;
-            buffer[bufferIndex++] = valueR;
+            buffer[bufferIndex++] = sampleL;
+            buffer[bufferIndex++] = sampleR;
         }
 
         // Enqueue the chunk
-        SDL_QueueAudio(mDeviceID, buffer, chunkSizeBytes);
+        SDL_QueueAudio(mDeviceID, buffer, CHUNK_BYTE_SIZE);
+        queuedBytes = SDL_GetQueuedAudioSize(mDeviceID);
     }
 }
 
-void Synthesizer::PlayNote(const SynthUtils::Note note, const int octave, const float duration, const SynthUtils::Timbre &timbre) {
+void Synthesizer::SetTimbre(std::unique_ptr<Timbre> timbre) {
+    mTimbre = std::move(timbre);
+}
+
+void Synthesizer::PlayNote(const SynthUtils::Note note, const int octave, const float duration) {
     mFrequency = GetFrequencyFromNote(note, octave);
 
     if (mFrequency == 0.0f) {
@@ -118,7 +102,6 @@ void Synthesizer::PlayNote(const SynthUtils::Note note, const int octave, const 
     }
 
     mDuration = duration;
-    mTimbre = timbre;
     mTimePlayed = 0.0f;
 
     mPhaseL = 0.0f;
@@ -141,6 +124,38 @@ void Synthesizer::Shutdown() {
         SDL_CloseAudioDevice(mDeviceID);
         mDeviceID = 0;
     }
+}
+
+void Synthesizer::GenerateRawSamples(float &sampleL, float &sampleR) {
+    if (!mIsPlaying) {
+        sampleL = 0.0f;
+        sampleR = 0.0f;
+        return;
+    }
+
+    const auto& cfg = mTimbre->GetConfig();
+
+    const float leftFrequency = mFrequency - mFrequency * cfg.detune * 0.005f;
+    const float rightFrequency = mFrequency + mFrequency * cfg.detune * 0.005f;
+
+    mPhaseL += leftFrequency * mSampleTimeStep;
+    if (mPhaseL >= 1.0f) {
+        mPhaseL -= std::floor(mPhaseL);
+    }
+
+    mPhaseR += rightFrequency * mSampleTimeStep;
+    if (mPhaseR >= 1.0f) {
+        mPhaseR -= std::floor(mPhaseR);
+    }
+
+    float valueL = GenerateBasicWave(cfg.osc1Type, mPhaseL);
+    float valueR = GenerateBasicWave(cfg.osc2Type, mPhaseR);
+
+    valueL *= cfg.volume;
+    valueR *= cfg.volume;
+
+    sampleL = valueL;
+    sampleR = valueR;
 }
 
 float Synthesizer::GetFrequencyFromNote(const SynthUtils::Note note, const int octave) {
