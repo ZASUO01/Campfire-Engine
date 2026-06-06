@@ -8,13 +8,17 @@
 #include "CampfireEngine/Graphics/PostEffect/PostEffect.h"
 #include "CampfireEngine/Math/Random.h"
 #include "Graphics/PostEffect/PostEffectsManager.h"
+#include "Assets/AssetsManager.h"
+#include "Sound/Synthesizer.h"
 
 GameBase::GameBase()
 :mWindow(nullptr)
 ,mGameData(nullptr)
 ,mRenderer(nullptr)
 ,mShadersManager(nullptr)
+,mAssetsManager(nullptr)
 ,mPostEffectsManager(nullptr)
+,mSynthesizer(nullptr)
 ,mGameState(GameState::DOWN)
 ,mIsRunning(false)
 ,mTicksCount(0)
@@ -97,8 +101,16 @@ ShadersSystem& GameBase::GetShadersSystem() const {
     return *mShadersManager;
 }
 
+AssetsSystem &GameBase::GetAssetsSystem() const {
+    return *mAssetsManager;
+}
+
 PostEffectsSystem &GameBase::GetPostEffectsSystem() const {
     return *mPostEffectsManager;
+}
+
+SynthesizerSystem &GameBase::GetSynthesizerSystem() const {
+    return *mSynthesizer;
 }
 
 void SDLWindowDeleter::operator()(SDL_Window* window) const{
@@ -136,12 +148,21 @@ bool GameBase::SetupBase() {
     }
 
     mShadersManager = std::make_unique<ShadersManager>();
+    mAssetsManager = std::make_unique<AssetsManager>();
     mPostEffectsManager = std::make_unique<PostEffectsManager>();
+    mSynthesizer = std::make_unique<Synthesizer>();
+    if (!mSynthesizer->Init()) {
+        SDL_Log("Failed to initialize synthesizer");
+        return false;
+    }
 
     return true;
 }
 
 void GameBase::CleanUpBase() {
+    mSynthesizer.reset();
+    mPostEffectsManager.reset();
+    mAssetsManager.reset();
     mShadersManager.reset();
     mRenderer.reset();
     mWindow.reset();
@@ -161,10 +182,14 @@ void GameBase::ProcessInput() {
     }
 }
 
-void GameBase::UpdateGameBase(const float deltaTime) const {
+void GameBase::UpdateGameBase(const float deltaTime) {
     if (mPostEffectsManager->CanUseEffects()) {
         mPostEffectsManager->GetCurrentEffect()->Update(deltaTime, mRenderer.get());
     }
+
+    mSynthesizer->Update();
+
+    Update(deltaTime);
 }
 
 void GameBase::GenerateOutput() const {

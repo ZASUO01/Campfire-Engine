@@ -5,7 +5,7 @@
 
 bool SDLUtils::SetupSubSystems() {
     // Init Video
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS |  SDL_INIT_AUDIO) != 0) {
         SDL_Log("[SDL UTILS] Unable to initialize SDL Video: %s", SDL_GetError());
         return false;
     }

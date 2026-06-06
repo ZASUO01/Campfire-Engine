@@ -91,6 +91,10 @@ namespace Math
 		return fmod(numer, denom);
 	}
 
+	[[nodiscard]] inline float Fmod(const float number) {
+		return Abs(number - static_cast<int>(number));
+	}
+
 	[[nodiscard]] inline constexpr float Sgn(float a)
 	{
 		if (a > 0.0f)

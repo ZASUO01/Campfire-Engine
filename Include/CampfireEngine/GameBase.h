@@ -15,11 +15,14 @@ public:
     // Getters
     [[nodiscard]] RendererSystem& GetRendererSystem() const;
     [[nodiscard]] ShadersSystem& GetShadersSystem() const;
+    [[nodiscard]] AssetsSystem& GetAssetsSystem() const;
     [[nodiscard]] PostEffectsSystem& GetPostEffectsSystem() const;
+    [[nodiscard]] SynthesizerSystem& GetSynthesizerSystem() const;
 
 protected:
     // Lifecycle methods
     [[nodiscard]] virtual bool Setup() = 0;
+    virtual void Update(float deltaTime) = 0;
     virtual void CleanUp() = 0;
 
 private:
@@ -35,7 +38,7 @@ private:
 
     // Looping operations
     void ProcessInput();
-    void UpdateGameBase(float deltaTime) const;
+    void UpdateGameBase(float deltaTime);
     void GenerateOutput() const;
 
     // System window
@@ -49,7 +52,9 @@ private:
 
     // Resource management systems
     std::unique_ptr<ShadersManager> mShadersManager;
+    std::unique_ptr<AssetsManager> mAssetsManager;
     std::unique_ptr<PostEffectsManager> mPostEffectsManager;
+    std::unique_ptr<Synthesizer> mSynthesizer;
 
     // Game control variables
     GameState mGameState;

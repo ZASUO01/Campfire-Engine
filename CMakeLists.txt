@@ -59,10 +59,16 @@ file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS
 
 # The GLAD library will be compiled together the source codes
 set(GLAD_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/External/glad/glad.c"
-        Include/CampfireEngine/Subsystems/ShadersSystem.h
-        Include/CampfireEngine/Subsystems/RendererSystem.h
-        Include/CampfireEngine/Subsystems/PostEffectsSystem.h
-        Src/Graphics/Renderer/RendererUtils.h)
+        Src/UI/UIScreensManager.cpp
+        Src/UI/UIScreensManager.h
+        Include/CampfireEngine/Subsystems/UIScreensSystem.h
+        Include/CampfireEngine/UI/Elements/UIElement.h
+        Src/UI/Elements/UIElement.cpp
+        Include/CampfireEngine/Subsystems/AssetsSystem.h
+        Include/CampfireEngine/UI/Elements/UIImage.h
+        Src/UI/Elements/UIImage.cpp
+        Src/Assets/AssetsManager.cpp
+        Src/Assets/AssetsManager.h)
 
 # Configure this as a library
 add_library(${PROJECT_NAME} STATIC ${ENGINE_SOURCES} ${ENGINE_HEADERS} ${GLAD_SOURCE})
