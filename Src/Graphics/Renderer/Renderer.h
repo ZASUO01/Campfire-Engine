@@ -1,14 +1,14 @@
 #pragma once
-#include "RendererUtils.h"
-#include "CampfireEngine/Math/Math.h"
-#include "CampfireEngine/Subsystems/RendererSystem.h"
 #include "CampfireEngine/Types/SDLTypesFwd.h"
+#include "RenderUtils.h"
+#include "CampfireEngine/Context/Subsystems/RenderSubsystem.h"
+#include "CampfireEngine/Math/Math.h"
 
-class Renderer : public RendererSystem{
+class Renderer : public RenderSubsystem {
 public:
     enum class RenderTarget {
         Screen,
-        PostProcess
+        Buffer
     };
 
     Renderer(SDL_Window* window, int width, int height);
@@ -16,31 +16,31 @@ public:
 
     [[nodiscard]] bool Init();
 
-    // Rendering functions
-    void SetRenderTarget(RenderTarget target) const;
+    void SetRenderTarget(RenderTarget target);
     static void Clear();
     void Draw();
-    void PostDraw() const;
     void Present() const;
 
-    // queue functions
-    void SetPostEffectCommand(const RendererUtils::PostEffectCommand& cmd) override { mPostEffectCommand = cmd; }
+    void SetOrthoMatrix(const Matrix4& matrix) { mOrthoMatrix = matrix; }
+
+    void PushUICommand(const RenderUtils::SpriteCommand &command) override { mUICommandsQueue.emplace_back(command); }
 private:
-    int mScreenWidth;
-    int mScreenHeight;
-
-    SDL_Window* mWindow;
+    // SDL structs
     UniqueGLContext mContext;
+    SDL_Window* mWindow;
 
-    // Operator that draws elements
+    // Window parameters
+    int mWindowWidth;
+    int mWindowHeight;
+
+    // Visualisation matrices
+    Matrix4 mOrthoMatrix;
+
+    // Drawer member has drawing methods
     std::unique_ptr<class Drawer> mDrawer;
 
-    // Post effects management
-    std::unique_ptr<class FrameBuffer> mFrameBuffer;
+    std::vector<RenderUtils::SpriteCommand> mUICommandsQueue;
 
-    //Current post effect command
-    RendererUtils::PostEffectCommand mPostEffectCommand;
-
-    // Constants
+    // constants
     static constexpr Vector4 CLEAR_COLOR{0.45f, 0.55f, 0.60f, 1.0f};
 };

@@ -3,8 +3,8 @@
 
 class UIElement {
 public:
-    explicit UIElement(const Vector2& offset = Vector2::Zero, const Vector2& size = Vector2::One,
-        float scale = 1.0f, float angle = 0.0f, int drawOrder = 100);
+    explicit UIElement(const Vector2 &offset = Vector2::Zero,
+        const Vector2 &size = Vector2::One, float scale = 1.0f, float angle = 0.0f, int drawOrder = 100);
     virtual ~UIElement();
 
     // Getters and Setters
@@ -28,11 +28,13 @@ public:
     [[nodiscard]] int GetDrawOrder() const { return mDrawOrder; }
     void SetDrawOrder(const int drawOrder) { mDrawOrder = drawOrder; }
 
-    // Defines how to send draw commands to the renderer
-    virtual void SendDrawCommand(class RendererSystem* renderer) = 0;
-
     [[nodiscard]] class Shader* GetShader() const { return mShader; }
+    void SetShader(Shader* shader) { mShader = shader; }
+
 private:
+    // Defines how to send draw commands to the renderer
+    virtual void SendDrawCommand(class RenderSubsystem* renderer) = 0;
+
     Vector2 mOffset;
     Vector2 mSize;
     float mScale;
@@ -45,4 +47,6 @@ private:
     int mDrawOrder;
 
     Shader* mShader;
+
+friend class UIScreen;
 };

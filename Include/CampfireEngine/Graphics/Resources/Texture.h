@@ -1,5 +1,5 @@
 #pragma once
-#include <glad/glad.h>
+#include "CampfireEngine/Types/SDLTypesFwd.h"
 
 class Texture {
 public:
@@ -9,7 +9,7 @@ public:
     Texture(const Texture&) = delete;
     Texture& operator=(const Texture&) = delete;
 
-    void CreateEmpty(int width, int height, GLint internalFormat = GL_RGB, GLenum format = GL_RGB);
+    void CreateFromSurface(UniqueSurface&& surface);
 
     void SetActive(int index = 0) const;
     [[nodiscard]] bool IsValid() const { return mTextureID != 0; }

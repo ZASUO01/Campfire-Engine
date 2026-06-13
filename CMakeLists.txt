@@ -74,12 +74,21 @@ target_include_directories(${PROJECT_NAME}
 )
 
 # The engine uses this libraries internally
-target_link_libraries(${PROJECT_NAME} PRIVATE
+target_link_libraries(${PROJECT_NAME} PUBLIC
         SDL2::SDL2
         SDL2_image::SDL2_image
         SDL2_ttf::SDL2_ttf
         SDL2_mixer::SDL2_mixer
         ${CMAKE_DL_LIBS}
+)
+
+# Copy non compiled resources to build
+file(
+    COPY
+        "${CMAKE_CURRENT_SOURCE_DIR}/Shaders"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Assets"
+    DESTINATION
+        "${CMAKE_BINARY_DIR}/CampfireEngine"
 )
 
 message(STATUS "Campfire Engine successfully configured to compile")

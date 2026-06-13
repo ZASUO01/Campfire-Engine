@@ -1,20 +1,15 @@
 #pragma once
 #include <memory>
-#include <string>
 #include <unordered_map>
-#include "CampfireEngine/Subsystems/ShadersSystem.h"
+#include "CampfireEngine/Context/Subsystems/ShadersSubsystem.h"
 
-class Shader;
-
-class ShadersManager : public ShadersSystem{
+class ShadersManager: public ShadersSubsystem{
 public:
-    ShadersManager();
     ~ShadersManager() override;
 
     Shader* GetShader(const std::string& name) override;
     void RemoveShader(const std::string& name) override;
-    void UnloadShaders() override;
-
+    void UnloadShaders();
 private:
     std::unordered_map<std::string, std::unique_ptr<Shader>> mShaders;
 };

@@ -1,18 +1,17 @@
 #pragma once
 
-class GameData;
+class ConfigSubsystem;
+class EngineConfig;
 
-class RendererSystem;
+class AssetsSubsystem;
+class AssetsManager;
+
+class ShadersSubsystem;
+class ShadersManager;
+
+class RenderSubsystem;
 class Renderer;
 
-class ScenesSystem;
-class ScenesManager;
+class UISubsystem;
+class UIManager;
 
-class ShadersSystem;
-class ShadersManager;
-class AssetsSystem;
-class AssetsManager;
-class PostEffectsSystem;
-class PostEffectsManager;
-class SynthesizerSystem;
-class Synthesizer;

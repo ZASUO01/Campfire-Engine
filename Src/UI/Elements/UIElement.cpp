@@ -8,9 +8,8 @@ UIElement::UIElement(const Vector2 &offset, const Vector2& size, const float sca
 ,mTransform(Matrix4::Identity)
 ,mIsTransformDirty(true),
 mIsVisible(true)
-,mDrawOrder(drawOrder) {
-
-}
+,mDrawOrder(drawOrder)
+,mShader(nullptr){}
 
 UIElement::~UIElement() = default;
 

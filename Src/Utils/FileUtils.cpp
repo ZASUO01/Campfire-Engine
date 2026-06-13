@@ -1,7 +1,7 @@
-#include "FileUtils.h"
+#include "CampfireEngine/Utils/FileUtils.h"
 #include <fstream>
 #include <sstream>
-#include <SDL2/SDL_log.h>
+#include <SDL_log.h>
 
 bool FileUtils::LoadFileToString(const std::string& filePath, std::string& outString) {
     outString.clear();

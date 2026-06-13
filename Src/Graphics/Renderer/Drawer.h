@@ -1,17 +1,16 @@
 #pragma once
 #include <memory>
-
-#include "RendererUtils.h"
+#include <vector>
+#include "RenderUtils.h"
 
 class Drawer {
 public:
     Drawer();
     ~Drawer();
 
-    void DrawPostPass(const RendererUtils::PostEffectCommand &cmd, const class Texture* texture) const;
-
+    void DrawUIPass(std::vector<RenderUtils::SpriteCommand>& UICommands, const Matrix4& ortho) const;
 private:
-    void GenerateFullQuadVertices();
+    void GenerateSpriteVertices();
 
-    std::unique_ptr<class VertexArray> mFullQuadVertices;
+    std::unique_ptr<class VertexArray> mSpriteVertices;
 };

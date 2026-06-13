@@ -1,28 +1,21 @@
 #include "Renderer.h"
-#include <SDL2/SDL.h>
-#include <glad/glad.h>
-#include "Utils/SDLUtils.h"
-#include "Graphics/PostEffect/PostEffectsManager.h"
-#include "Graphics/PostEffect/FrameBuffer.h"
 #include "Drawer.h"
+#include "CampfireEngine/Utils/SDLUtils.h"
+#include <glad/glad.h>
+#include <SDL2/SDL.h>
 
-Renderer::Renderer(SDL_Window *window, const int width, const int height)
-:mScreenWidth(width)
-,mScreenHeight(height)
+Renderer::Renderer(SDL_Window* window, const int width, const int height)
+:mContext(nullptr)
 ,mWindow(window)
+,mWindowWidth(width)
+,mWindowHeight(height)
+,mOrthoMatrix(Matrix4::Identity)
 ,mDrawer(nullptr)
-,mFrameBuffer(nullptr)
-,mPostEffectCommand({})
 {}
 
 Renderer::~Renderer() = default;
 
-void SDL_GLContextDeleter::operator()(void* context) const {
-    SDLUtils::SDL_GLContextDeleter()(context);
-}
-
 bool Renderer::Init() {
-    // Create context
     const auto context = SDL_GL_CreateContext(mWindow);
     if (!context) {
         SDL_Log("[RENDERER] Failed to create OpenGL context.");
@@ -30,7 +23,6 @@ bool Renderer::Init() {
     }
     mContext.reset(context);
 
-    // Init GLAD
     if (!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
         SDL_Log("[RENDERER] Failed to init GLAD.");
         return false;
@@ -42,36 +34,28 @@ bool Renderer::Init() {
         return false;
     }
 
-    mFrameBuffer = std::make_unique<FrameBuffer>(mScreenWidth, mScreenHeight);
+    glClearColor(CLEAR_COLOR.x, CLEAR_COLOR.y, CLEAR_COLOR.z, CLEAR_COLOR.w);
 
+
+    // Set matrices default
+    mOrthoMatrix = Matrix4::CreateOrtho(0.0f, static_cast<float>(mWindowWidth), static_cast<float>(mWindowHeight), 0.0f, -1.0f, 1.0f);
+
+    // Init members
     mDrawer = std::make_unique<Drawer>();
 
-    // Set clear color
-    glClearColor(CLEAR_COLOR.x, CLEAR_COLOR.y, CLEAR_COLOR.z, CLEAR_COLOR.w);
     return true;
 }
 
-void Renderer::SetRenderTarget(const RenderTarget target) const {
-    if (target == RenderTarget::PostProcess) {
-        mFrameBuffer->Bind();
-        return;
-    }
+void Renderer::SetRenderTarget(RenderTarget target) {
 
-    FrameBuffer::Unbind();
 }
 
 void Renderer::Clear() {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::Draw() {
-
-}
-
-void Renderer::PostDraw() const {
-    const auto tex = mFrameBuffer->GetTexture();
-
-    mDrawer->DrawPostPass(mPostEffectCommand, tex);
+    mDrawer->DrawUIPass(mUICommandsQueue, mOrthoMatrix);
 }
 
 void Renderer::Present() const {

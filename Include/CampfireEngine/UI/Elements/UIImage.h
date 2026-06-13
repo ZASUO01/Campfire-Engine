@@ -1,15 +1,16 @@
 #pragma once
-#include <string>
-#include "UIElement.h"
-#include "CampfireEngine/Math/Math.h"
+#include "RegularUIElement.h"
 
-class UIImage :public UIElement {
+class UIImage : public RegularUIElement {
 public:
-    explicit UIImage(const Vector2& offset = Vector2::Zero, float scale = 1.0f, float angle = 0.0f, int drawOrder = 100);
+    explicit UIImage(const Vector2& offset = Vector2::Zero, float scale = 1.0f,
+        float angle = 0.0f, int drawOrder = 100);
 
-    void SetTexture(const std::string& name, class AssetsSystem* assets);
-    void SendDrawCommand(RendererSystem* renderer) override;
+    void SetTexture(class Texture* texture);
 
 private:
-    class Texture* mTexture;
+    Texture* mTexture;
+    void SendDrawCommand(RenderSubsystem* renderer) override;
+
+friend class UIScreen;
 };
